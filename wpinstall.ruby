@@ -11,6 +11,9 @@ include Open3
 #   jupiter: install jupiter boolean flag
 #   visual_composer: install vc boolean flag
 #   analytics: install Google analytics into child theme boolean
+#   go_portfolio: install Go Portfolio
+#   booked: install Booked
+#   edge: install latest Wordpress from GitHub
 
 sites = {
  lynann: {
@@ -20,6 +23,15 @@ sites = {
     db_name: 'lynann_wp',
     db_password: 'santosa',
     jupiter: true
+  },
+ play: {
+    site: '/opt/wordpress/play',
+    user: 'mbs',
+    db_user: 'play',
+    db_name: 'play_wp',
+    db_password: 'santosa',
+    visual_composer: true,
+    go_portfolio: true
   },
   scratch: {
     site: '/opt/wordpress/scratch',
@@ -78,8 +90,9 @@ else
   DB_NAME = config[:db_name]
   DB_USER = config[:db_user]
   DB_PASSWORD = config[:db_password]
-  USE_JUPITER = config[:jupiter]
-  USE_VISUAL_COMPOSER = config[:visual_composer]
+  INSTALL_JUPITER = config[:jupiter]
+  INSTALL_JS_COMPOSER = config[:visual_composer]
+  INSTALL_GO_PORTFOLIO = config[:go_portfolio]
 end
 
 puts "Using site #{SITE}"
@@ -87,8 +100,9 @@ puts "Linux user acct is #{USER}"
 puts "Name of database: #{DB_NAME}"
 puts "Database user: #{DB_USER}"
 puts "Datbase password: #{DB_PASSWORD}"
-puts "Use Jupiter: #{USE_JUPITER}"
-puts "Use Visual Composer: #{USE_VISUAL_COMPOSER}"
+puts "Install Jupiter: #{INSTALL_JUPITER}"
+puts "Use Visual Composer: #{INSTALL_JS_COMPOSER}"
+puts "Install Go Portfolio: #{INSTALL_GO_PORTFOLIO}"
 
 # Currently, one of thirdmode or Thetis-2.local.
 hostname = Socket.gethostname
@@ -107,10 +121,11 @@ INSTALL_USER = APACHE_USER
 INSTALL_GROUP = APACHE_GROUP
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.1.1.zip"
+WP_DIST = "/opt/packages/wordpress-4.2.1.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 JUPITER_MAIN = "/opt/envato/jupiter/main"
-JS_COMPOSER = "/opt/envato/visual-composer/js_composer.zip"
+JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
+GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
 puts "Deleting site directory"
 %x[rm -rf #{SITE}]
@@ -123,18 +138,23 @@ puts "Unzipping Wordpress distribution into site directory"
 %x[mv #{SITE}/wordpress/* #{SITE}]
 %x[rmdir #{SITE}/wordpress]
 
-if USE_JUPITER
+if INSTALL_JUPITER
   puts "Installing Jupiter"
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/Jupiter-child.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/LayerSlider_v5.3.2.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-v2.9.12.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider_v4.6.5.zip && rm -rf __MACOSX)]
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/LayerSlider-*.zip && rm -rf __MACOSX)]
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-*.zip && rm -rf __MACOSX)]
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
 end
 
-if USE_VISUAL_COMPOSER
+if INSTALL_JS_COMPOSER
   puts "Installing Visual Composer"
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JS_COMPOSER})]
+end
+
+if INSTALL_GO_PORTFOLIO
+  puts "Installing Go Portfolio"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{GO_PORTFOLIO})]
 end
 
 # Create per-user wp-config.php.
@@ -147,7 +167,7 @@ replace = replace.gsub(/username_here/, DB_USER)
 replace = replace.gsub(/password_here/, DB_PASSWORD)
 File.open(output_filename, "w") {|file| file.puts replace}
 
-if USE_JUPITER
+if INSTALL_JUPITER
   puts "Adjusting WP_MEMORY_LIMIT"
   filename = "#{SITE}/wp-includes/default-constants.php"
   text = File.read(filename)
