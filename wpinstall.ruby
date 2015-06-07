@@ -50,6 +50,14 @@ sites = {
     db_password: 'santosa',
     jupiter: true
   },
+  jupiter2: {
+    site: '/opt/wordpress/jupiter2',
+    user: 'mbs',
+    db_user: 'jupiter2',
+    db_name: 'jupiter2_wp',
+    db_password: 'santosa',
+    jupiter: true
+  },
   thirdmode: {
     site: '/opt/wordpress/thirdmode',
     user: 'mbs',
@@ -121,7 +129,7 @@ INSTALL_USER = APACHE_USER
 INSTALL_GROUP = APACHE_GROUP
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.2.1.zip"
+WP_DIST = "/opt/packages/wordpress-4.2.2.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 JUPITER_MAIN = "/opt/envato/jupiter/main"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
