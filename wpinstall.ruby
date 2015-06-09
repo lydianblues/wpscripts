@@ -42,11 +42,11 @@ sites = {
     jupiter: true,
     visual_composer: false
   },
-  jupiter: {
-    site: '/opt/wordpress/jupiter',
+  jenny: {
+    site: '/opt/wordpress/jenny',
     user: 'mbs',
-    db_user: 'jupiter',
-    db_name: 'jupiter_wp',
+    db_user: 'jenny',
+    db_name: 'jenny_wp',
     db_password: 'santosa',
     jupiter: true
   },
@@ -131,6 +131,7 @@ INSTALL_GROUP = APACHE_GROUP
 ROOT_DB_PASSWORD = "har526"
 WP_DIST = "/opt/packages/wordpress-4.2.2.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
+MYSQL_SOCK = "/var/run/mysqld/mysqld.sock"
 JUPITER_MAIN = "/opt/envato/jupiter/main"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
@@ -207,8 +208,10 @@ puts "Creating empty .htaccess file."
 %x[chmod 775 #{SITE}/.htaccess]
 
 puts "Recreating database."
-puts "running: mysql -u root -p#{ROOT_DB_PASSWORD}"
-Open3.popen3("#{MYSQL} -u root -p#{ROOT_DB_PASSWORD}") do |stdin, stdout, stderr|
+puts "running: #{MYSQL} -u root -S #{MYSQL_SOCK} -p#{ROOT_DB_PASSWORD}"
+Open3.popen3("#{MYSQL} -u root -S #{MYSQL_SOCK} -p#{ROOT_DB_PASSWORD}") do 
+  |stdin, stdout, stderr|
+
     stdin.puts("DROP DATABASE IF EXISTS #{DB_NAME};")
     stdin.puts("CREATE DATABASE #{DB_NAME};")
     stdin.puts("GRANT ALL ON #{DB_NAME}.* TO " +
