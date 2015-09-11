@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require "open3"
 require "socket"
+require "io/console"
 include Open3
 
 # Site Configuration Options
@@ -13,6 +14,8 @@ include Open3
 #   analytics: install Google analytics into child theme boolean
 #   go_portfolio: install Go Portfolio
 #   booked: install Booked
+#   rev_slider: install Slider Revolution
+#   master_slider: install Master Slider
 #   edge: install latest Wordpress from GitHub
 
 sites = {
@@ -30,8 +33,18 @@ sites = {
     db_user: 'play',
     db_name: 'play_wp',
     db_password: 'santosa',
-    visual_composer: true,
-    go_portfolio: true
+    rev_slider: true,
+    master_slider: true,
+    go_portfolio: true,
+    visual_composer: true
+  },
+ master: {
+    site: '/opt/wordpress/master',
+    user: 'mbs',
+    db_user: 'master',
+    db_name: 'master_wp',
+    db_password: 'santosa',
+    # master_slider: true
   },
   scratch: {
     site: '/opt/wordpress/scratch',
@@ -98,43 +111,84 @@ else
   DB_NAME = config[:db_name]
   DB_USER = config[:db_user]
   DB_PASSWORD = config[:db_password]
+
+  # Installable features:
   INSTALL_JUPITER = config[:jupiter]
   INSTALL_JS_COMPOSER = config[:visual_composer]
   INSTALL_GO_PORTFOLIO = config[:go_portfolio]
+  INSTALL_REV_SLIDER = config[:rev_slider]
+  INSTALL_MASTER_SLIDER = config[:master_slider]
 end
 
-puts "Using site #{SITE}"
-puts "Linux user acct is #{USER}"
-puts "Name of database: #{DB_NAME}"
-puts "Database user: #{DB_USER}"
-puts "Datbase password: #{DB_PASSWORD}"
-puts "Install Jupiter: #{INSTALL_JUPITER}"
-puts "Use Visual Composer: #{INSTALL_JS_COMPOSER}"
-puts "Install Go Portfolio: #{INSTALL_GO_PORTFOLIO}"
+# Not yet implemented.
+INSTALL_ANALYTICS = false
+INSTALL_WORDPRESS_EDGE = false
 
-# Currently, one of thirdmode or Thetis-2.local.
 hostname = Socket.gethostname
 if hostname == "thirdmode"
   APACHE_GROUP = "www-data" # for Ubuntu
   APACHE_USER = "www-data" # for Ubuntu
-elsif hostname == "Thetis-2.local"
+  MYSQL_SOCK = "/var/run/mysqld/mysqld.sock"
+elsif ["Thetis-2.local", "Thetis.local"].include?(Socket.gethostname)
   APACHE_GROUP = "daemon" # for MAC OS X
   APACHE_USER = "daemon" # for MAC OS X
+  MYSQL_SOCK = "/tmp/mysql.sock"
 else
-  puts "Can't determine hostname"
-  exit 3
+  puts "Unknown Hostname"
+  exit 1
+end
+
+ROOT_DB_PASSWORD = "har526"
+WP_DIST = "/opt/packages/wordpress-4.3.zip"
+MYSQL = "/usr/local/mysql/bin/mysql"
+JUPITER_MAIN = "/opt/envato/jupiter/main"
+JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
+REV_SLIDER = "/opt/envato/revolution/revslider.zip"
+MASTER_SLIDER = "/opt/envato/master/masterslider-installable.zip"
+GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
+
+puts "Using site: #{SITE}"
+puts "Linux user acct: #{USER}"
+puts "Name of database: #{DB_NAME}"
+puts "Database user: #{DB_USER}"
+puts "Datbase password: #{DB_PASSWORD}"
+puts "Hostname : #{hostname}"
+puts "Apache user: #{APACHE_USER}"
+puts "Apache group: #{APACHE_GROUP}"
+puts "MySQL socket: #{MYSQL_SOCK}"
+
+["INSTALL_JUPITER",
+  "INSTALL_JS_COMPOSER", 
+  "INSTALL_GO_PORTFOLIO",
+  "INSTALL_JS_COMPOSER",
+  "INSTALL_MASTER_SLIDER", 
+  "INSTALL_REV_SLIDER",
+  "INSTALL_ANALYTICS", 
+  "INSTALL_WORDPRESS_EDGE"].each do |feature|
+    to_install = "No"
+    if eval(feature)
+      to_install = "Yes"
+    end
+    puts feature + ": " + to_install
+  end
+
+print "Do you want to continue? (y/n): "
+response = STDIN.getch
+
+if response != "Y" && response != "y"
+  puts "\nExiting..."
+  exit 0
+else 
+  puts "\nContinuing..."
+end
+
+if Process.uid != 0
+  puts "You must be root to run this program."
+  exit 1
 end
 
 INSTALL_USER = APACHE_USER
 INSTALL_GROUP = APACHE_GROUP
-
-ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.2.2.zip"
-MYSQL = "/usr/local/mysql/bin/mysql"
-MYSQL_SOCK = "/var/run/mysqld/mysqld.sock"
-JUPITER_MAIN = "/opt/envato/jupiter/main"
-JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
-GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
 puts "Deleting site directory"
 %x[rm -rf #{SITE}]
@@ -164,6 +218,16 @@ end
 if INSTALL_GO_PORTFOLIO
   puts "Installing Go Portfolio"
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{GO_PORTFOLIO})]
+end
+
+if INSTALL_REV_SLIDER
+  puts "Installing Slider Revolution"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{REV_SLIDER})]
+end
+
+if INSTALL_MASTER_SLIDER
+  puts "Installing Master Slider"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{MASTER_SLIDER})]
 end
 
 # Create per-user wp-config.php.
