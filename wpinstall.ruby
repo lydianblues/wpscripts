@@ -36,7 +36,8 @@ sites = {
     rev_slider: true,
     master_slider: true,
     go_portfolio: true,
-    visual_composer: true
+    visual_composer: true,
+    edge: true
   },
  master: {
     site: '/opt/wordpress/master',
@@ -111,6 +112,7 @@ else
   DB_NAME = config[:db_name]
   DB_USER = config[:db_user]
   DB_PASSWORD = config[:db_password]
+  INSTALL_WORDPRESS_EDGE = config[:edge]
 
   # Installable features:
   INSTALL_JUPITER = config[:jupiter]
@@ -122,7 +124,6 @@ end
 
 # Not yet implemented.
 INSTALL_ANALYTICS = false
-INSTALL_WORDPRESS_EDGE = false
 
 hostname = Socket.gethostname
 if hostname == "thirdmode"
@@ -156,6 +157,7 @@ puts "Hostname : #{hostname}"
 puts "Apache user: #{APACHE_USER}"
 puts "Apache group: #{APACHE_GROUP}"
 puts "MySQL socket: #{MYSQL_SOCK}"
+puts "Install latest from GitHub: #{INSTALL_WORDPRESS_EDGE}"
 
 ["INSTALL_JUPITER",
   "INSTALL_JS_COMPOSER", 
@@ -194,12 +196,16 @@ puts "Deleting site directory"
 %x[rm -rf #{SITE}]
 %x[mkdir -p #{SITE}]
 
-# Unzip distribution into the site directory.
-puts "Unzipping Wordpress distribution into site directory"
-# %x[(cd #{SITE} && tar xzvf #{WP_DIST})]
-%x[(cd #{SITE} && unzip #{WP_DIST})]
-%x[mv #{SITE}/wordpress/* #{SITE}]
-%x[rmdir #{SITE}/wordpress]
+
+if INSTALL_WORDPRESS_EDGE
+  puts "Cloning Wordpress from GitHub"
+  %x[cd #{SITE}/.. && git clone https://github.com/WordPress/WordPress.git #{SITE}]
+else
+  puts "Unzipping Wordpress distribution into site directory"
+  %x[(cd #{SITE} && unzip #{WP_DIST})]
+  %x[mv #{SITE}/wordpress/* #{SITE}]
+  %x[rmdir #{SITE}/wordpress]
+end
 
 if INSTALL_JUPITER
   puts "Installing Jupiter"
