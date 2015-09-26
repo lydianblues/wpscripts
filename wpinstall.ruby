@@ -10,6 +10,7 @@ include Open3
 #   db_user: database user name
 #   db_password: database password
 #   jupiter: install jupiter boolean flag
+#   tempera: install tempera boolean flag
 #   visual_composer: install vc boolean flag
 #   analytics: install Google analytics into child theme boolean
 #   go_portfolio: install Go Portfolio
@@ -27,17 +28,19 @@ sites = {
     db_password: 'santosa',
     jupiter: true
   },
- play: {
+ play: { # everything except jupiter
     site: '/opt/wordpress/play',
     user: 'mbs',
     db_user: 'play',
     db_name: 'play_wp',
     db_password: 'santosa',
-    rev_slider: true,
-    master_slider: true,
-    go_portfolio: true,
-    visual_composer: true,
-    edge: true
+    rev_slider: false,
+    master_slider: false,
+    go_portfolio: false,
+    visual_composer: false,
+    booked: false,
+    tempera: true,
+    edge: false
   },
  master: {
     site: '/opt/wordpress/master',
@@ -116,6 +119,7 @@ else
 
   # Installable features:
   INSTALL_JUPITER = config[:jupiter]
+  INSTALL_TEMPERA = config[:tempera]
   INSTALL_JS_COMPOSER = config[:visual_composer]
   INSTALL_GO_PORTFOLIO = config[:go_portfolio]
   INSTALL_REV_SLIDER = config[:rev_slider]
@@ -140,7 +144,8 @@ else
 end
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.3.zip"
+WP_DIST = "/opt/packages/wordpress-4.3.1.zip"
+TEMPERA = "/opt/packages/tempera.1.3.3.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 JUPITER_MAIN = "/opt/envato/jupiter/main"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
@@ -160,12 +165,13 @@ puts "MySQL socket: #{MYSQL_SOCK}"
 puts "Install latest from GitHub: #{INSTALL_WORDPRESS_EDGE}"
 
 ["INSTALL_JUPITER",
+  "INSTALL_TEMPERA",
   "INSTALL_JS_COMPOSER", 
   "INSTALL_GO_PORTFOLIO",
   "INSTALL_JS_COMPOSER",
   "INSTALL_MASTER_SLIDER", 
   "INSTALL_REV_SLIDER",
-  "INSTALL_ANALYTICS", 
+  "INSTALL_ANALYTICS",
   "INSTALL_WORDPRESS_EDGE"].each do |feature|
     to_install = "No"
     if eval(feature)
@@ -208,12 +214,17 @@ else
 end
 
 if INSTALL_JUPITER
-  puts "Installing Jupiter"
+  puts "Installing Jupiter Theme"
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/Jupiter-child.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/LayerSlider-*.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-*.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
+end
+
+if INSTALL_TEMPERA
+  puts "Installing Tempera Theme"
+  %x[(cd #{SITE}/wp-content/themes && unzip -o #{TEMPERA})]
 end
 
 if INSTALL_JS_COMPOSER
