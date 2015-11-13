@@ -10,6 +10,7 @@ include Open3
 #   db_user: database user name
 #   db_password: database password
 #   jupiter: install jupiter boolean flag
+#   avada: install avada boolean flag
 #   tempera: install tempera boolean flag
 #   visual_composer: install vc boolean flag
 #   analytics: install Google analytics into child theme boolean
@@ -20,15 +21,30 @@ include Open3
 #   edge: install latest Wordpress from GitHub
 
 sites = {
+  proto: {
+    site: '/opt/wordpress/proto',
+    user: 'mbs',
+    db_user: 'bare',
+    db_name: 'bare_wp',
+    db_password: 'santosa'
+  },
+  bare: {
+    site: '/opt/wordpress/bare',
+    user: 'mbs',
+    db_user: 'bare',
+    db_name: 'bare_wp',
+    db_password: 'santosa'
+  },
  lynann: {
     site: '/opt/wordpress/lynann',
     user: 'mbs',
     db_user: 'lynann',
     db_name: 'lynann_wp',
     db_password: 'santosa',
-    jupiter: true
+    avada: true,
+    edge: false
   },
- play: { # everything except jupiter
+ play: {
     site: '/opt/wordpress/play',
     user: 'mbs',
     db_user: 'play',
@@ -39,7 +55,8 @@ sites = {
     go_portfolio: false,
     visual_composer: false,
     booked: false,
-    tempera: true,
+    tempera: false,
+    jupiter: true,
     edge: false
   },
  master: {
@@ -119,6 +136,7 @@ else
 
   # Installable features:
   INSTALL_JUPITER = config[:jupiter]
+  INSTALL_AVADA = config[:avada]
   INSTALL_TEMPERA = config[:tempera]
   INSTALL_JS_COMPOSER = config[:visual_composer]
   INSTALL_GO_PORTFOLIO = config[:go_portfolio]
@@ -134,10 +152,12 @@ if hostname == "thirdmode"
   APACHE_GROUP = "www-data" # for Ubuntu
   APACHE_USER = "www-data" # for Ubuntu
   MYSQL_SOCK = "/var/run/mysqld/mysqld.sock"
+  INSTALL_GROUP = "mbs"
 elsif ["Thetis-2.local", "Thetis.local"].include?(Socket.gethostname)
   APACHE_GROUP = "daemon" # for MAC OS X
   APACHE_USER = "daemon" # for MAC OS X
   MYSQL_SOCK = "/tmp/mysql.sock"
+  INSTALL_GROUP = "staff"
 else
   puts "Unknown Hostname"
   exit 1
@@ -147,7 +167,14 @@ ROOT_DB_PASSWORD = "har526"
 WP_DIST = "/opt/packages/wordpress-4.3.1.zip"
 TEMPERA = "/opt/packages/tempera.1.3.3.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
-JUPITER_MAIN = "/opt/envato/jupiter/main"
+
+JUPITER_INSTALL = "/opt/envato/jupiter-install/jupiter.zip"
+JUPITER_MAIN="/opt/envato/jupiter-all/main"
+
+AVADA_HOME = "/opt/envato/avada/Avada_Full_Package/Avada Theme"
+AVADA_MAIN = "#{AVADA_HOME}/Avada.zip"
+AVADA_CHILD = "#{AVADA_HOME}/Avada-Child-Theme.zip"
+
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
 REV_SLIDER = "/opt/envato/revolution/revslider.zip"
 MASTER_SLIDER = "/opt/envato/master/masterslider-installable.zip"
@@ -162,9 +189,14 @@ puts "Hostname : #{hostname}"
 puts "Apache user: #{APACHE_USER}"
 puts "Apache group: #{APACHE_GROUP}"
 puts "MySQL socket: #{MYSQL_SOCK}"
-puts "Install latest from GitHub: #{INSTALL_WORDPRESS_EDGE}"
+if INSTALL_WORDPRESS_EDGE
+	puts "Install latest from GitHub: yes"
+else
+	puts "Install latest from GitHub: no"
+end
 
 ["INSTALL_JUPITER",
+  "INSTALL_AVADA",
   "INSTALL_TEMPERA",
   "INSTALL_JS_COMPOSER", 
   "INSTALL_GO_PORTFOLIO",
@@ -202,7 +234,6 @@ puts "Deleting site directory"
 %x[rm -rf #{SITE}]
 %x[mkdir -p #{SITE}]
 
-
 if INSTALL_WORDPRESS_EDGE
   puts "Cloning Wordpress from GitHub"
   %x[cd #{SITE}/.. && git clone https://github.com/WordPress/WordPress.git #{SITE}]
@@ -214,13 +245,24 @@ else
 end
 
 if INSTALL_JUPITER
-  puts "Installing Jupiter Theme"
+#  puts "Installing Jupiter Theme from installable zip file."
+#  %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_INSTALL} && rm -rf __MACOSX)]
+
+  puts "Installing Jupiter Theme from complete package."
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/Jupiter-child.zip && rm -rf __MACOSX)]
+  puts "Installing Jupiter Child Theme from complete package."
+  %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter-child.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/LayerSlider-*.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-*.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
+ %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
 end
+
+if INSTALL_AVADA
+  puts "Installing Avada Theme from complete package."
+  %x[(cd #{SITE}/wp-content/themes && unzip -o "#{AVADA_MAIN}" && rm -rf __MACOSX)]
+  puts "Installing Avada Child Theme from complete package."
+  %x[(cd #{SITE}/wp-content/themes && unzip -o "#{AVADA_CHILD}" && rm -rf __MACOSX)]
+ end
 
 if INSTALL_TEMPERA
   puts "Installing Tempera Theme"
@@ -257,15 +299,14 @@ replace = replace.gsub(/username_here/, DB_USER)
 replace = replace.gsub(/password_here/, DB_PASSWORD)
 File.open(output_filename, "w") {|file| file.puts replace}
 
-if INSTALL_JUPITER
-  puts "Adjusting WP_MEMORY_LIMIT"
-  filename = "#{SITE}/wp-includes/default-constants.php"
-  text = File.read(filename)
-  regexp = /define\('WP_MEMORY_LIMIT', '\d+M'\)/
-  replace = "define(\'WP_MEMORY_LIMIT\', \'128M\')"
-  text = text.gsub(regexp, replace)
-  File.open(filename, "w") {|file| file.puts text}
-end
+# Only needed for Jupiter.
+puts "Adjusting WP_MEMORY_LIMIT"
+filename = "#{SITE}/wp-includes/default-constants.php"
+text = File.read(filename)
+regexp = /define\('WP_MEMORY_LIMIT', '\d+M'\)/
+replace = "define(\'WP_MEMORY_LIMIT\', \'256M\')"
+text = text.gsub(regexp, replace)
+File.open(filename, "w") {|file| file.puts text}
 
 # Fix all the permissions.
 puts "Making #{INSTALL_USER}:#{INSTALL_GROUP} the user/group."
@@ -283,10 +324,13 @@ puts "Changing permission on #{SITE}/wp-content to 0775 for all subdirs."
 puts "Changing permission on #{SITE}/wp-content to 0664 for all files."
 %x[find #{SITE}/wp-content -type f -exec chmod 664 {} '\;']
 
-puts "Creating empty .htaccess file."
+puts "Creating .htaccess file."
 %x[touch #{SITE}/.htaccess]
-%x[chown #{USER}:#{APACHE_GROUP} #{SITE}/.htaccess]
+%x[chown #{APACHE_USER}:#{INSTALL_GROUP} #{SITE}/.htaccess]
 %x[chmod 775 #{SITE}/.htaccess]
+File.open("#{SITE}/.htaccess, 'w') {
+	|f| f.write("php_value max_execution_time 60")
+}
 
 puts "Recreating database."
 puts "running: #{MYSQL} -u root -S #{MYSQL_SOCK} -p#{ROOT_DB_PASSWORD}"
