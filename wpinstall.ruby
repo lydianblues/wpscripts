@@ -65,6 +65,7 @@ sites = {
     db_user: 'master',
     db_name: 'master_wp',
     db_password: 'santosa',
+    booked: true
     # master_slider: true
   },
   scratch: {
@@ -73,8 +74,10 @@ sites = {
     db_user: 'scratch',
     db_name: 'scratch_wp',
     db_password: 'santosa',
-    jupiter: true,
-    visual_composer: false
+    jupiter: false,
+    visual_composer: true,
+    master_slider: true,
+    go_portfolio: true
   },
   jenny: {
     site: '/opt/wordpress/jenny',
@@ -141,6 +144,7 @@ else
   INSTALL_JS_COMPOSER = config[:visual_composer]
   INSTALL_GO_PORTFOLIO = config[:go_portfolio]
   INSTALL_REV_SLIDER = config[:rev_slider]
+  INSTALL_BOOKED = config[:booked]
   INSTALL_MASTER_SLIDER = config[:master_slider]
 end
 
@@ -163,21 +167,25 @@ else
   exit 1
 end
 
+# The installed tree has Apache uid.
+
+INSTALL_USER = APACHE_USER
+
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.3.1.zip"
+WP_DIST = "/opt/packages/wordpress-4.4.1.zip"
 TEMPERA = "/opt/packages/tempera.1.3.3.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
-JUPITER_INSTALL = "/opt/envato/jupiter-install/jupiter.zip"
-JUPITER_MAIN="/opt/envato/jupiter-all/main"
+JUPITER_MAIN="/opt/envato/jupiter5/main"
 
 AVADA_HOME = "/opt/envato/avada/Avada_Full_Package/Avada Theme"
 AVADA_MAIN = "#{AVADA_HOME}/Avada.zip"
 AVADA_CHILD = "#{AVADA_HOME}/Avada-Child-Theme.zip"
 
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
-REV_SLIDER = "/opt/envato/revolution/revslider.zip"
-MASTER_SLIDER = "/opt/envato/master/masterslider-installable.zip"
+REV_SLIDER = "/opt/envato/revslider/revslider.zip"
+MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
+BOOKED = "/opt/envato/booked/_v1.6.15/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
 puts "Using site: #{SITE}"
@@ -186,8 +194,8 @@ puts "Name of database: #{DB_NAME}"
 puts "Database user: #{DB_USER}"
 puts "Datbase password: #{DB_PASSWORD}"
 puts "Hostname : #{hostname}"
-puts "Apache user: #{APACHE_USER}"
-puts "Apache group: #{APACHE_GROUP}"
+puts "Install user: #{INSTALL_USER}"
+puts "Install group: #{INSTALL_GROUP}"
 puts "MySQL socket: #{MYSQL_SOCK}"
 if INSTALL_WORDPRESS_EDGE
 	puts "Install latest from GitHub: yes"
@@ -198,11 +206,11 @@ end
 ["INSTALL_JUPITER",
   "INSTALL_AVADA",
   "INSTALL_TEMPERA",
-  "INSTALL_JS_COMPOSER", 
   "INSTALL_GO_PORTFOLIO",
   "INSTALL_JS_COMPOSER",
   "INSTALL_MASTER_SLIDER", 
   "INSTALL_REV_SLIDER",
+  "INSTALL_BOOKED",
   "INSTALL_ANALYTICS",
   "INSTALL_WORDPRESS_EDGE"].each do |feature|
     to_install = "No"
@@ -227,9 +235,6 @@ if Process.uid != 0
   exit 1
 end
 
-INSTALL_USER = APACHE_USER
-INSTALL_GROUP = APACHE_GROUP
-
 puts "Deleting site directory"
 %x[rm -rf #{SITE}]
 %x[mkdir -p #{SITE}]
@@ -245,9 +250,6 @@ else
 end
 
 if INSTALL_JUPITER
-#  puts "Installing Jupiter Theme from installable zip file."
-#  %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_INSTALL} && rm -rf __MACOSX)]
-
   puts "Installing Jupiter Theme from complete package."
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
   puts "Installing Jupiter Child Theme from complete package."
@@ -289,6 +291,11 @@ if INSTALL_MASTER_SLIDER
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{MASTER_SLIDER})]
 end
 
+if INSTALL_BOOKED
+  puts "Installing Booked"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{BOOKED})]
+end
+
 # Create per-user wp-config.php.
 puts "Creating wp-config.php."
 input_filename = "#{SITE}/wp-config-sample.php"
@@ -326,10 +333,10 @@ puts "Changing permission on #{SITE}/wp-content to 0664 for all files."
 
 puts "Creating .htaccess file."
 %x[touch #{SITE}/.htaccess]
-%x[chown #{APACHE_USER}:#{INSTALL_GROUP} #{SITE}/.htaccess]
+%x[chown #{INSTALL_USER}:#{INSTALL_GROUP} #{SITE}/.htaccess]
 %x[chmod 775 #{SITE}/.htaccess]
-File.open("#{SITE}/.htaccess, 'w') {
-	|f| f.write("php_value max_execution_time 60")
+File.open("#{SITE}/.htaccess", 'w') {
+	|f| f.write("php_value max_execution_time 300")
 }
 
 puts "Recreating database."
