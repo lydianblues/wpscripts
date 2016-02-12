@@ -95,6 +95,14 @@ sites = {
     db_password: 'santosa',
     jupiter: true
   },
+  niroga: {
+    site: '/opt/wordpress/niroga',
+    user: 'mbs',
+    db_user: 'niroga',
+    db_name: 'niroga_wp',
+    db_password: 'santosa',
+    jupiter: true
+  },
   thirdmode: {
     site: '/opt/wordpress/thirdmode',
     user: 'mbs',
@@ -172,7 +180,7 @@ end
 INSTALL_USER = APACHE_USER
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.4.1.zip"
+WP_DIST = "/opt/packages/wordpress-4.4.2.zip"
 TEMPERA = "/opt/packages/tempera.1.3.3.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
@@ -185,7 +193,7 @@ AVADA_CHILD = "#{AVADA_HOME}/Avada-Child-Theme.zip"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
 REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
-BOOKED = "/opt/envato/booked/_v1.6.15/booked.zip"
+BOOKED = "/opt/envato/booked/_v1.6.20/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
 puts "Using site: #{SITE}"
