@@ -7,78 +7,64 @@
 #     with the name #{SITE}-#{COMMIT}.sql exists in the backup directory.
 # (3) Make sure that the working directory is clean
 
-require 'open3'
+require_relative 'wp_git_helpers'
 
-def check_and_expand_commit(commit)
-  return false unless commit
-  puts "Checking commit: #{commit}"
-  line = %x[git show -s #{commit}| sed 1q]
-  return false unless $? == 0
-  commit = line.split[1]
-  return commit
+class WpRestore
+
+  BASE = "/opt/wordpress/backups"
+
+  include WpGitHelpers
+
+  def do_restore(acommit)
+
+    if acommit
+      commit = check_and_expand_commit(acommit)
+    else
+      commit = get_head_commit
+    end
+
+    unless commit && commit.length == 40
+      puts "Could not find commit to restore"
+      exit 1
+    end
+
+    puts "expanded commit is #{commit}"
+
+    site = Dir.pwd.split('/')[-1]
+    
+    backup_file = "#{BASE}/#{site}-#{commit}.sql"
+
+    unless File.exist?(backup_file)
+      puts "No database for this commit: #{commit}"
+      exit 2
+    end
+
+    puts "Restoring from backup file: #{backup_file}"
+
+    %x[mysqladmin -u root -phar526 -f drop #{site}_wp]
+
+    %x[mysqladmin -u root -phar526 create  #{site}_wp]
+
+    %x[mysql -u root -phar526 #{site}_wp < #{backup_file}]
+
+    puts <<GIT_INSTRUCTIONS
+    ### 
+    ### Reset destroys everything after given commit:
+    ###   sudo -u daemon git reset --hard <sha1-of-commit>
+    ###
+    ### Checkout with a detached HEAD:
+    ###   git checkout <sha1-of-commit>
+    ###
+    ### Create new branch of earlier commit:
+    ###   git branch branchname <sha1-of-commit>
+    ###
+    ### Remove untracked files and directories:
+    ###   puts "%x[sudo -u daemon git clean -d -f]"
+    ###
+GIT_INSTRUCTIONS
+  end
 end
 
-def is_clean
-  stdin, stdout, stderr = Open3.popen3('git status')
-        if stdout.gets == "On branch master\n" &&
-	      stdout.gets == "nothing to commit, working directory clean\n"
-	      return true;
-	end
-	return false
-end
+x = WpRestore.new
 
-def get_head_commit
-        line = %x[git show -s HEAD]
-        commit = line[1]
-        if commit.length != 40
-                puts "Can't get HEAD commit"
-                return nil
-        end
-        return commit
-end
-
-def first_commit
-
-unless ARGV[0]
-  puts "Usage: wprestore <commit>"
-  exit 2
-end
-
-commit = check_and_expand_commit(ARGV[0])
-
-if commit == false
-  puts "invalid commit: ARGV[0]"
-  exit 1
-end
-puts "expanded commit is #{commit}"
-
-site = Dir.pwd.split('/')[-1]
-BASE = "/opt/wordpress/backups"
-
-backup_file = "#{BASE}/#{site}-#{commit}.sql"
-
-unless File.exist?(backup_file)
-  puts "No database for this commit: #{commit}"
-  exit 3
-end
-
-puts "backup file is #{backup_file}"
-
-puts "%x[mysqladmin -u root -phar526 -f drop #{site}_wp]"
-
-puts "%x[mysqladmin -u root -phar526 create  #{site}_wp]"
-
-puts "%x[mysql -u root -phar526 niroga_wp < #{backup_file}]"
-
-### 
-### reset destroys everything after given commit
-### puts "%x[sudo -u daemon git reset --hard ${commit}]"
-###
-### We want a git checkout instead???? What about "detached head"?
-puts "%x[git checkout #{commit}]"
-
-# remove untracked files and directories
-puts "%x[sudo -u daemon git clean -d -f]"
-
-
-
+x.do_restore(ARGV[0])

@@ -20,10 +20,7 @@ module WpGitHelpers
   end
 
   def get_head_commit
-          line = %x[git show -s HEAD]
-          commit = line[1]
-          return nil unless commit.length == 40
-          return commit
+    check_and_expand_commit("HEAD")
   end
 
 end
