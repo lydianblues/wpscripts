@@ -184,7 +184,7 @@ WP_DIST = "/opt/packages/wordpress-4.4.2.zip"
 TEMPERA = "/opt/packages/tempera.1.3.3.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
-JUPITER_MAIN="/opt/envato/jupiter5/main"
+JUPITER_MAIN="/opt/envato/jupiter5/jupiter-main-package"
 
 AVADA_HOME = "/opt/envato/avada/Avada_Full_Package/Avada Theme"
 AVADA_MAIN = "#{AVADA_HOME}/Avada.zip"
@@ -262,7 +262,7 @@ if INSTALL_JUPITER
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
   puts "Installing Jupiter Child Theme from complete package."
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter-child.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/LayerSlider-*.zip && rm -rf __MACOSX)]
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/layersliderwp--*.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-*.zip && rm -rf __MACOSX)]
  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
 end
