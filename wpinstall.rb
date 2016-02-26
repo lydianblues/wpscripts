@@ -59,7 +59,15 @@ sites = {
     jupiter: true,
     edge: false
   },
- master: {
+ dmind: {
+    site: '/opt/wordpress/dmind',
+    user: 'mbs',
+    db_user: 'dmind',
+    db_name: 'dmind_wp',
+    db_password: 'santosa',
+    jupiter: true
+ },
+master: {
     site: '/opt/wordpress/master',
     user: 'mbs',
     db_user: 'master',
