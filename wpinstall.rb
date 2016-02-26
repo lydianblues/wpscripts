@@ -193,7 +193,7 @@ AVADA_CHILD = "#{AVADA_HOME}/Avada-Child-Theme.zip"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
 REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
-BOOKED = "/opt/envato/booked/_v1.6.20/booked.zip"
+BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
 puts "Using site: #{SITE}"
