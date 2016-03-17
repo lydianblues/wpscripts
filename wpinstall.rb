@@ -117,7 +117,7 @@ master: {
     db_user: 'thirdmode',
     db_name: 'thirdmode_wp',
     db_password: 'santosa',
-    jupiter: true
+    avada: true
   },
   jrootes: {
     site: '/home/jrootes/wordpress',
@@ -270,7 +270,7 @@ if INSTALL_JUPITER
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
   puts "Installing Jupiter Child Theme from complete package."
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter-child.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/layersliderwp--*.zip && rm -rf __MACOSX)]
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/layersliderwp-*.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-*.zip && rm -rf __MACOSX)]
  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
 end
