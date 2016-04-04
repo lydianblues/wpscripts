@@ -17,7 +17,9 @@ include Open3
 #   go_portfolio: install Go Portfolio
 #   booked: install Booked
 #   rev_slider: install Slider Revolution
+#   layer_slider: Layer Slider
 #   master_slider: install Master Slider
+#   events_calendar: install theeventscalendar base, pro, and filterbar
 #   edge: install latest Wordpress from GitHub
 
 sites = {
@@ -42,6 +44,9 @@ sites = {
     db_name: 'lynann_wp',
     db_password: 'santosa',
     avada: true,
+    layer_slider: true,
+    rev_slider: true,
+    events_calendar: true,
     edge: false
   },
  play: {
@@ -160,8 +165,10 @@ else
   INSTALL_JS_COMPOSER = config[:visual_composer]
   INSTALL_GO_PORTFOLIO = config[:go_portfolio]
   INSTALL_REV_SLIDER = config[:rev_slider]
-  INSTALL_BOOKED = config[:booked]
   INSTALL_MASTER_SLIDER = config[:master_slider]
+  INSTALL_LAYER_SLIDER = config[:layer_slider]
+  INSTALL_EVENTS_CALENDAR = config[:events_calendar]
+  INSTALL_BOOKED = config[:booked]
 end
 
 # Not yet implemented.
@@ -189,7 +196,7 @@ INSTALL_USER = APACHE_USER
 
 ROOT_DB_PASSWORD = "har526"
 WP_DIST = "/opt/packages/wordpress-4.4.2.zip"
-TEMPERA = "/opt/packages/tempera.1.3.3.zip"
+TEMPERA = "/opt/packages/tempera.1.4.0.1.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
 JUPITER_MAIN="/opt/envato/jupiter5/jupiter-main-package"
@@ -201,6 +208,11 @@ AVADA_CHILD = "#{AVADA_HOME}/Avada-Child-Theme.zip"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
 REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
+LAYER_SLIDER = "/opt/envato/layerslider/layersliderwp-5.6.2.installable.zip"
+EVENTS_CALENDAR_HOME="/opt/packages/theeventscalendar"
+EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.0.6.zip"
+EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.0.6.zip"
+EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.0.3.zip"
 BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
@@ -226,6 +238,8 @@ end
   "INSTALL_JS_COMPOSER",
   "INSTALL_MASTER_SLIDER", 
   "INSTALL_REV_SLIDER",
+  "INSTALL_EVENTS_CALENDAR",
+  "INSTALL_LAYER_SLIDER",
   "INSTALL_BOOKED",
   "INSTALL_ANALYTICS",
   "INSTALL_WORDPRESS_EDGE"].each do |feature|
@@ -305,6 +319,20 @@ end
 if INSTALL_MASTER_SLIDER
   puts "Installing Master Slider"
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{MASTER_SLIDER})]
+end
+
+if INSTALL_LAYER_SLIDER
+  puts "Installing Layer Slider"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{LAYER_SLIDER})]
+end
+
+if INSTALL_EVENTS_CALENDAR
+  puts "Installing Events Calendar"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{EVENTS_CALENDAR_BASE})]
+  puts "Installing Events Calendar Pro"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{EVENTS_CALENDAR_PRO})]
+  puts "Installing Events Calendar Filter Bar"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{EVENTS_CALENDAR_FILTER})]
 end
 
 if INSTALL_BOOKED
