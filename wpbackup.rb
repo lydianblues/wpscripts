@@ -3,14 +3,20 @@
 require_relative 'wp_git_helpers'
 
 class WpBackup
+	BASE = "/opt/wordpress/backups"
+        MASTER_PASSWORD = "har526"
+
 	include WpGitHelpers
 	def do_backup
 		unless is_clean 
 			puts "Please commit your work first\n"
 		else
-			commit = get_head_commit
-			puts "Backing up revision #{commit}"
-		    %x[mysqldump -u root -phar526 niroga_wp > ../backups/niroga-#{commit}.sql]
+		    site = Dir.pwd.split('/')[-1]
+		    commit = get_head_commit
+                    backup_file = "#{BASE}/#{site}-#{commit}.sql"
+                    db_name = "#{site}_wp"
+                    puts "Backing up #{db_name} to file: #{backup_file}"
+		    %x[mysqldump -u root -p#{MASTER_PASSWORD} #{db_name} > #{backup_file}]
 		    if $? == 0
 		    	puts "Backup succeeded"
 		    else
