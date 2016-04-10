@@ -106,7 +106,8 @@ master: {
     db_user: 'jupiter2',
     db_name: 'jupiter2_wp',
     db_password: 'santosa',
-    jupiter: true
+    jupiter: true,
+    events_calendar: true
   },
   niroga: {
     site: '/opt/wordpress/niroga',
@@ -210,9 +211,9 @@ REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
 LAYER_SLIDER = "/opt/envato/layerslider/layersliderwp-5.6.2.installable.zip"
 EVENTS_CALENDAR_HOME="/opt/packages/theeventscalendar"
-EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.0.6.zip"
-EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.0.6.zip"
-EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.0.3.zip"
+EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.1.1.1.zip"
+EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.1.1.zip"
+EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.1.0.zip"
 BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 
