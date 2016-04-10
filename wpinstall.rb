@@ -181,11 +181,18 @@ if hostname == "thirdmode"
   APACHE_USER = "www-data" # for Ubuntu
   MYSQL_SOCK = "/var/run/mysqld/mysqld.sock"
   INSTALL_GROUP = "mbs"
-elsif ["Thetis-2.local", "Thetis.local"].include?(Socket.gethostname)
+elsif ["Thetis-2.local", "Thetis.local"].include?(hostname)
   APACHE_GROUP = "daemon" # for MAC OS X
   APACHE_USER = "daemon" # for MAC OS X
   MYSQL_SOCK = "/tmp/mysql.sock"
   INSTALL_GROUP = "staff"
+elsif hostname == "threnody"
+8a188,192
+elsif hostname == "threnody"
+  APACHE_GROUP = "www-data" # for Ubuntu
+  APACHE_USER = "www-data" # for Ubuntu
+  MYSQL_SOCK = "/tmp/mysql.sock"
+  INSTALL_GROUP = "mbs"
 else
   puts "Unknown Hostname"
   exit 1
