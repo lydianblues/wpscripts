@@ -187,8 +187,6 @@ elsif ["Thetis-2.local", "Thetis.local"].include?(hostname)
   MYSQL_SOCK = "/tmp/mysql.sock"
   INSTALL_GROUP = "staff"
 elsif hostname == "threnody"
-8a188,192
-elsif hostname == "threnody"
   APACHE_GROUP = "www-data" # for Ubuntu
   APACHE_USER = "www-data" # for Ubuntu
   MYSQL_SOCK = "/tmp/mysql.sock"
@@ -203,7 +201,7 @@ end
 INSTALL_USER = APACHE_USER
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.4.2.zip"
+WP_DIST = "/opt/packages/wordpress-4.5.zip"
 TEMPERA = "/opt/packages/tempera.1.4.0.1.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
@@ -218,7 +216,7 @@ REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
 LAYER_SLIDER = "/opt/envato/layerslider/layersliderwp-5.6.2.installable.zip"
 EVENTS_CALENDAR_HOME="/opt/packages/theeventscalendar"
-EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.1.1.1.zip"
+EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.1.2.zip"
 EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.1.2.zip"
 EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.1.0.zip"
 BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
