@@ -21,6 +21,7 @@ include Open3
 #   master_slider: install Master Slider
 #   events_calendar: install theeventscalendar base, pro, and filterbar
 #   edge: install latest Wordpress from GitHub
+#   woo_commerce: install Woo Commerce 
 
 sites = {
   proto: {
@@ -107,7 +108,8 @@ master: {
     db_name: 'jupiter2_wp',
     db_password: 'santosa',
     jupiter: true,
-    events_calendar: true
+    events_calendar: true,
+    woo_commerce: true
   },
   niroga: {
     site: '/opt/wordpress/niroga',
@@ -170,6 +172,7 @@ else
   INSTALL_LAYER_SLIDER = config[:layer_slider]
   INSTALL_EVENTS_CALENDAR = config[:events_calendar]
   INSTALL_BOOKED = config[:booked]
+  INSTALL_WOO_COMMERCE = config[:woo_commerce]
 end
 
 # Not yet implemented.
@@ -221,6 +224,7 @@ EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.1.2.zip"
 EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.1.0.zip"
 BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
+WOO_COMMERCE = "/opt/packages/woocommerce.2.5.5.zip"
 
 puts "Using site: #{SITE}"
 puts "Linux user acct: #{USER}"
@@ -231,11 +235,6 @@ puts "Hostname : #{hostname}"
 puts "Install user: #{INSTALL_USER}"
 puts "Install group: #{INSTALL_GROUP}"
 puts "MySQL socket: #{MYSQL_SOCK}"
-if INSTALL_WORDPRESS_EDGE
-	puts "Install latest from GitHub: yes"
-else
-	puts "Install latest from GitHub: no"
-end
 
 ["INSTALL_JUPITER",
   "INSTALL_AVADA",
@@ -247,6 +246,7 @@ end
   "INSTALL_EVENTS_CALENDAR",
   "INSTALL_LAYER_SLIDER",
   "INSTALL_BOOKED",
+  "INSTALL_WOO_COMMERCE",
   "INSTALL_ANALYTICS",
   "INSTALL_WORDPRESS_EDGE"].each do |feature|
     to_install = "No"
@@ -344,6 +344,11 @@ end
 if INSTALL_BOOKED
   puts "Installing Booked"
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{BOOKED})]
+end
+
+if INSTALL_WOO_COMMERCE
+  puts "Installing Woo Commerce"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{WOO_COMMERCE})]
 end
 
 # Create per-user wp-config.php.
