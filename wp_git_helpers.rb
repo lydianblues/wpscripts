@@ -13,7 +13,7 @@ module WpGitHelpers
   def is_clean
     clean_msg =  "nothing to commit, working directory clean\n"
     stdin, stdout, stderr = Open3.popen3('git status')
-          if stdout.gets == "On branch master\n" &&
+          if stdout.gets == "On branch before_upgrades\n" &&
                 (stdout.gets == clean_msg ||
 		  stdout.gets == clean_msg || stdout.gets == clean_msg)
                 return true;
