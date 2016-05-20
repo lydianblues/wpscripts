@@ -21,6 +21,7 @@ include Open3
 #   master_slider: install Master Slider
 #   events_calendar: install theeventscalendar base, pro, and filterbar
 #   edge: install latest Wordpress from GitHub
+#   woo_commerce: install Woo Commerce 
 
 sites = {
   proto: {
@@ -106,7 +107,9 @@ master: {
     db_user: 'jupiter2',
     db_name: 'jupiter2_wp',
     db_password: 'santosa',
-    jupiter: true
+    jupiter: true,
+    events_calendar: true,
+    woo_commerce: true
   },
   niroga: {
     site: '/opt/wordpress/niroga',
@@ -169,6 +172,7 @@ else
   INSTALL_LAYER_SLIDER = config[:layer_slider]
   INSTALL_EVENTS_CALENDAR = config[:events_calendar]
   INSTALL_BOOKED = config[:booked]
+  INSTALL_WOO_COMMERCE = config[:woo_commerce]
 end
 
 # Not yet implemented.
@@ -180,11 +184,16 @@ if hostname == "thirdmode"
   APACHE_USER = "www-data" # for Ubuntu
   MYSQL_SOCK = "/var/run/mysqld/mysqld.sock"
   INSTALL_GROUP = "mbs"
-elsif ["Thetis-2.local", "Thetis.local"].include?(Socket.gethostname)
+elsif ["Thetis-2.local", "Thetis.local"].include?(hostname)
   APACHE_GROUP = "daemon" # for MAC OS X
   APACHE_USER = "daemon" # for MAC OS X
   MYSQL_SOCK = "/tmp/mysql.sock"
   INSTALL_GROUP = "staff"
+elsif hostname == "threnody"
+  APACHE_GROUP = "www-data" # for Ubuntu
+  APACHE_USER = "www-data" # for Ubuntu
+  MYSQL_SOCK = "/tmp/mysql.sock"
+  INSTALL_GROUP = "mbs"
 else
   puts "Unknown Hostname"
   exit 1
@@ -195,7 +204,7 @@ end
 INSTALL_USER = APACHE_USER
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.4.2.zip"
+WP_DIST = "/opt/packages/wordpress-4.5.zip"
 TEMPERA = "/opt/packages/tempera.1.4.0.1.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
@@ -210,11 +219,12 @@ REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
 LAYER_SLIDER = "/opt/envato/layerslider/layersliderwp-5.6.2.installable.zip"
 EVENTS_CALENDAR_HOME="/opt/packages/theeventscalendar"
-EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.0.6.zip"
-EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.0.6.zip"
-EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.0.3.zip"
+EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.1.2.zip"
+EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.1.2.zip"
+EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.1.0.zip"
 BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
+WOO_COMMERCE = "/opt/packages/woocommerce.2.5.5.zip"
 
 puts "Using site: #{SITE}"
 puts "Linux user acct: #{USER}"
@@ -225,11 +235,6 @@ puts "Hostname : #{hostname}"
 puts "Install user: #{INSTALL_USER}"
 puts "Install group: #{INSTALL_GROUP}"
 puts "MySQL socket: #{MYSQL_SOCK}"
-if INSTALL_WORDPRESS_EDGE
-	puts "Install latest from GitHub: yes"
-else
-	puts "Install latest from GitHub: no"
-end
 
 ["INSTALL_JUPITER",
   "INSTALL_AVADA",
@@ -241,6 +246,7 @@ end
   "INSTALL_EVENTS_CALENDAR",
   "INSTALL_LAYER_SLIDER",
   "INSTALL_BOOKED",
+  "INSTALL_WOO_COMMERCE",
   "INSTALL_ANALYTICS",
   "INSTALL_WORDPRESS_EDGE"].each do |feature|
     to_install = "No"
@@ -338,6 +344,11 @@ end
 if INSTALL_BOOKED
   puts "Installing Booked"
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{BOOKED})]
+end
+
+if INSTALL_WOO_COMMERCE
+  puts "Installing Woo Commerce"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{WOO_COMMERCE})]
 end
 
 # Create per-user wp-config.php.
