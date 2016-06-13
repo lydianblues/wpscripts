@@ -22,6 +22,7 @@ include Open3
 #   events_calendar: install theeventscalendar base, pro, and filterbar
 #   edge: install latest Wordpress from GitHub
 #   woo_commerce: install Woo Commerce 
+#   clean_login: install Clean Login
 
 sites = {
   proto: {
@@ -29,7 +30,25 @@ sites = {
     user: 'mbs',
     db_user: 'bare',
     db_name: 'bare_wp',
-    db_password: 'santosa'
+    db_password: 'santosa',
+    jupiter: true,
+    clean_login: true
+  },
+  envato: {
+	site: '/opt/wordpress/envato',
+	user: 'mbs',
+	db_user: 'envato',
+	db_name: 'envato_wp',
+	db_password: 'santosa',
+	jupiter: true,
+	avada: true,
+	tempera: true,
+	visual_composer: true,
+	go_portfolio: true,
+	booked: true,
+	rev_slider: true,
+	layer_slider: true,
+	master_slider: true,
   },
   bare: {
     site: '/opt/wordpress/bare',
@@ -109,7 +128,6 @@ master: {
     db_password: 'santosa',
     jupiter: true,
     events_calendar: true,
-    woo_commerce: true
   },
   niroga: {
     site: '/opt/wordpress/niroga',
@@ -173,6 +191,7 @@ else
   INSTALL_EVENTS_CALENDAR = config[:events_calendar]
   INSTALL_BOOKED = config[:booked]
   INSTALL_WOO_COMMERCE = config[:woo_commerce]
+  INSTALL_CLEAN_LOGIN = config[:clean_login]
 end
 
 # Not yet implemented.
@@ -204,7 +223,7 @@ end
 INSTALL_USER = APACHE_USER
 
 ROOT_DB_PASSWORD = "har526"
-WP_DIST = "/opt/packages/wordpress-4.5.zip"
+WP_DIST = "/opt/packages/wordpress-4.5.2.zip"
 TEMPERA = "/opt/packages/tempera.1.4.0.1.zip"
 MYSQL = "/usr/local/mysql/bin/mysql"
 
@@ -217,14 +236,15 @@ AVADA_CHILD = "#{AVADA_HOME}/Avada-Child-Theme.zip"
 JS_COMPOSER = "/opt/envato/visual/js_composer.zip"
 REV_SLIDER = "/opt/envato/revslider/revslider.zip"
 MASTER_SLIDER = "/opt/envato/masterslider/masterslider-installable.zip"
-LAYER_SLIDER = "/opt/envato/layerslider/layersliderwp-5.6.2.installable.zip"
+LAYER_SLIDER = "/opt/envato/layerslider/layersliderwp-5.6.8.installable.zip"
 EVENTS_CALENDAR_HOME="/opt/packages/theeventscalendar"
 EVENTS_CALENDAR_BASE= "#{EVENTS_CALENDAR_HOME}/the-events-calendar.4.1.2.zip"
 EVENTS_CALENDAR_PRO = "#{EVENTS_CALENDAR_HOME}/events-calendar-pro.4.1.2.zip"
 EVENTS_CALENDAR_FILTER = "#{EVENTS_CALENDAR_HOME}/the-events-calendar-filterbar.4.1.0.zip"
-BOOKED = "/opt/envato/booked/Booked_v1.7.3/booked.zip"
+BOOKED = "/opt/envato/booked/Booked_v1.7.14/booked.zip"
 GO_PORTFOLIO = "/opt/envato/go/go_portfolio.zip"
 WOO_COMMERCE = "/opt/packages/woocommerce.2.5.5.zip"
+CLEAN_LOGIN = "/opt/packages/clean-login.zip"
 
 puts "Using site: #{SITE}"
 puts "Linux user acct: #{USER}"
@@ -248,6 +268,7 @@ puts "MySQL socket: #{MYSQL_SOCK}"
   "INSTALL_BOOKED",
   "INSTALL_WOO_COMMERCE",
   "INSTALL_ANALYTICS",
+  "INSTALL_CLEAN_LOGIN",
   "INSTALL_WORDPRESS_EDGE"].each do |feature|
     to_install = "No"
     if eval(feature)
@@ -290,7 +311,7 @@ if INSTALL_JUPITER
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter.zip && rm -rf __MACOSX)]
   puts "Installing Jupiter Child Theme from complete package."
   %x[(cd #{SITE}/wp-content/themes && unzip -o #{JUPITER_MAIN}/jupiter-child.zip && rm -rf __MACOSX)]
-  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/layersliderwp-*.zip && rm -rf __MACOSX)]
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/LayerSlider-*.zip && rm -rf __MACOSX)]
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/masterslider-installable-*.zip && rm -rf __MACOSX)]
  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{JUPITER_MAIN}/Plugins/revslider-* && rm -rf __MACOSX)]
 end
@@ -344,6 +365,11 @@ end
 if INSTALL_BOOKED
   puts "Installing Booked"
   %x[(cd #{SITE}/wp-content/plugins && unzip -o #{BOOKED})]
+end
+
+if INSTALL_CLEAN_LOGIN
+  puts "Installing Clean Login"
+  %x[(cd #{SITE}/wp-content/plugins && unzip -o #{CLEAN_LOGIN})]
 end
 
 if INSTALL_WOO_COMMERCE
